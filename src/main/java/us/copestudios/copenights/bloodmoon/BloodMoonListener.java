@@ -1,4 +1,4 @@
-package us.copestudios.copenights;
+package us.copestudios.copenights.bloodmoon;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -27,9 +27,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
-import us.copestudios.copenights.BloodMoonSettings.Setting;
+import us.copestudios.copenights.CopeNights;
+import us.copestudios.copenights.bloodmoon.BloodMoonSettings.Setting;
 
-public class BloodMoonListener implements Listener {
+/**
+ * Everything the Blood Moon reacts to: natural spawns (multiplied, buffed, sometimes swapped for special mobs),
+ * mob damage, extra drops/XP, deaths (for survivor rewards), sleeping, and keeping the boss bar and red tint
+ * on players who join, respawn or change worlds.
+ */
+public final class BloodMoonListener implements Listener {
 
     private final CopeNights plugin;
     private final BloodMoonManager moon;
@@ -43,6 +49,7 @@ public class BloodMoonListener implements Listener {
 
     // ---------------- spawns ----------------
 
+    /** Only NATURAL spawns of hostile mobs count; our own extra spawns use reason CUSTOM, so they never chain. */
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onSpawn(CreatureSpawnEvent e) {
         if (e.getSpawnReason() != CreatureSpawnEvent.SpawnReason.NATURAL) return;
@@ -92,6 +99,7 @@ public class BloodMoonListener implements Listener {
 
     // ---------------- combat ----------------
 
+    /** Blood Moon mobs (and their arrows, fireballs...) hit harder. */
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onDamage(EntityDamageByEntityEvent e) {
         Entity attacker = e.getDamager();
@@ -104,6 +112,7 @@ public class BloodMoonListener implements Listener {
         }
     }
 
+    /** Counts kills for the boss bar, and multiplies drops and XP of Blood Moon mobs killed by a player. */
     @EventHandler
     public void onDeath(EntityDeathEvent e) {
         LivingEntity dead = e.getEntity();
@@ -141,7 +150,7 @@ public class BloodMoonListener implements Listener {
     public void onBed(PlayerBedEnterEvent e) {
         if (settings.getBool(Setting.BLOCK_SLEEP) && moon.isActive(e.getPlayer().getWorld())) {
             e.setCancelled(true);
-            e.getPlayer().sendMessage(plugin.prefix() + settings.msg("no-sleep"));
+            plugin.messages().send(e.getPlayer(), "bloodmoon.no-sleep");
         }
     }
 

@@ -1,11 +1,10 @@
-package us.copestudios.copenights;
+package us.copestudios.copenights.scare;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.FluidCollisionMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.World;
@@ -27,6 +26,11 @@ import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 
+import us.copestudios.copecore.CopeCore;
+import us.copestudios.copecore.util.Entities;
+import us.copestudios.copecore.util.Particles;
+import us.copestudios.copenights.CopeNights;
+
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -36,10 +40,17 @@ import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Spawns "Herobrine" apparitions that only the targeted player can see.
- * The body is a frozen, silent, invulnerable skeleton wearing a player head
- * and Steve-colored leather armor, hidden from everyone except the target.
+ *
+ * <h2>How the body works</h2>
+ * <p>It's a frozen, silent, invulnerable skeleton wearing a player head (with the Herobrine skin) and
+ * Steve-colored leather armor. It's hidden from everyone ({@code setVisibleByDefault(false)}) and then shown to
+ * the target only, so other players never see it. It is never saved to the world, carries a hidden tag
+ * ({@link CopeNights#scareEntityKey()}) so leftovers can be found and removed, and is registered with CopeCore's
+ * entity protection so other Cope plugins leave it alone too.</p>
+ *
+ * <p>Only one apparition per player at a time: a new one replaces the old one.</p>
  */
-public class HerobrineManager {
+public final class HerobrineManager {
 
     private final CopeNights plugin;
     private volatile PlayerProfile headProfile;
@@ -55,9 +66,13 @@ public class HerobrineManager {
     // Skin
     // ------------------------------------------------------------------
 
+    /**
+     * Loads the head skin from config.yml: "herobrine.skin-url" (a direct texture link) wins over
+     * "herobrine.skin-name" (an account name, looked up from Mojang in the background so the server never freezes).
+     */
     public void loadSkin() {
-        String url = plugin.getConfig().getString("herobrine.skin-url", "");
-        String name = plugin.getConfig().getString("herobrine.skin-name", "Herobrine");
+        String url = plugin.settings().get().getString("herobrine.skin-url", "");
+        String name = plugin.settings().get().getString("herobrine.skin-name", "Herobrine");
 
         if (url != null && !url.isBlank()) {
             try {
@@ -96,8 +111,8 @@ public class HerobrineManager {
 
     /** Herobrine appears in the distance, stares, and vanishes when looked at or approached. */
     public boolean sighting(Player target) {
-        double min = plugin.getConfig().getDouble("herobrine.min-distance", 14);
-        double max = Math.max(min + 1, plugin.getConfig().getDouble("herobrine.max-distance", 26));
+        double min = plugin.settings().get().getDouble("herobrine.min-distance", 14);
+        double max = Math.max(min + 1, plugin.settings().get().getDouble("herobrine.max-distance", 26));
 
         Location spot = findSightingSpot(target, min, max);
         if (spot == null) return false;
@@ -105,9 +120,9 @@ public class HerobrineManager {
         remove(target.getUniqueId());
         Skeleton body = spawnBody(target, spot);
 
-        int lifetime = (int) (plugin.getConfig().getDouble("herobrine.lifetime-seconds", 12) * 20);
-        int lookNeeded = (int) (plugin.getConfig().getDouble("herobrine.vanish-look-seconds", 1.5) * 20);
-        double vanishDist = plugin.getConfig().getDouble("herobrine.vanish-distance", 8);
+        int lifetime = (int) (plugin.settings().get().getDouble("herobrine.lifetime-seconds", 12) * 20);
+        int lookNeeded = (int) (plugin.settings().get().getDouble("herobrine.vanish-look-seconds", 1.5) * 20);
+        double vanishDist = plugin.settings().get().getDouble("herobrine.vanish-distance", 8);
 
         Apparition app = new Apparition(body);
         active.put(target.getUniqueId(), app);
@@ -148,7 +163,7 @@ public class HerobrineManager {
 
         remove(target.getUniqueId());
         Skeleton body = spawnBody(target, spot);
-        int lifetime = (int) (plugin.getConfig().getDouble("herobrine.stalker-lifetime-seconds", 10) * 20);
+        int lifetime = (int) (plugin.settings().get().getDouble("herobrine.stalker-lifetime-seconds", 10) * 20);
 
         Apparition app = new Apparition(body);
         active.put(target.getUniqueId(), app);
@@ -204,6 +219,7 @@ public class HerobrineManager {
     // Cleanup
     // ------------------------------------------------------------------
 
+    /** True while this player has an apparition. */
     public boolean has(UUID target) {
         return active.containsKey(target);
     }
@@ -213,6 +229,7 @@ public class HerobrineManager {
         if (app != null) app.destroy();
     }
 
+    /** Removes every apparition. @return how many there were */
     public int removeAll() {
         int n = active.size();
         active.values().forEach(Apparition::destroy);
@@ -220,6 +237,7 @@ public class HerobrineManager {
         return n;
     }
 
+    /** True if this entity is the body of a live apparition (not a leftover). */
     public boolean isActiveEntity(Entity e) {
         for (Apparition a : active.values()) {
             if (a.body.getUniqueId().equals(e.getUniqueId())) return true;
@@ -234,7 +252,8 @@ public class HerobrineManager {
     private void vanish(Player target, Apparition app, boolean withEffect) {
         if (withEffect && target.isOnline() && app.body.isValid()) {
             Location l = app.body.getLocation().add(0, 1, 0);
-            target.spawnParticle(Particle.LARGE_SMOKE, l, 25, 0.3, 0.7, 0.3, 0.01);
+            // "LARGE_SMOKE" on 1.20.5+, "SMOKE_LARGE" before: CopeCore picks the one that exists.
+            Particles.spawn(target, "LARGE_SMOKE", l, 25, 0.3, 0.7, 0.3, 0.01);
             target.playSound(l, Sound.ENTITY_ENDERMAN_TELEPORT, SoundCategory.HOSTILE, 0.6f, 0.5f);
         }
         cleanup(target.getUniqueId(), app);
@@ -251,8 +270,8 @@ public class HerobrineManager {
     }
 
     private Skeleton spawnBody(Player target, Location at) {
-        World w = at.getWorld();
-        Skeleton body = w.spawn(at, Skeleton.class, e -> {
+        // CopeCore picks the spawn method this server has (its signature changed in 1.20.2).
+        Skeleton body = Entities.spawn(at, Skeleton.class, e -> {
             e.setVisibleByDefault(false);   // hidden from everyone...
             e.setPersistent(false);         // ...never saved to the world
             e.setRemoveWhenFarAway(true);
@@ -280,6 +299,7 @@ public class HerobrineManager {
                 eq.setItemInMainHandDropChance(0f);
             }
         });
+        CopeCore.protection().protect(body); // other Cope plugins treat it as untouchable too
         target.showEntity(plugin, body); // ...except the target
         face(body, target);
         return body;

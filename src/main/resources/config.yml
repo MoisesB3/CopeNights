@@ -1,22 +1,28 @@
-# ============================================
+# =============================================================================
 #  Cope Nights - config.yml
-#  /coni reload after editing
-# ============================================
+#  Run /coni reload after editing.
+#
+#  This file has the SETTINGS. Every text (chat lines, titles, whispers, the
+#  prefix...) now lives in messages.yml. Blood Moon settings are in bloodmoon.yml
+#  (most of them are also editable in-game with /coni bloodmoon).
+#
+#  New settings added in future updates are written into this file
+#  automatically, and a broken file is repaired (the old one is kept as
+#  config.yml.broken-<date>).
+# =============================================================================
 
-# Colors: &#RRGGBB, or <gradient:#FF8C1A:#A80000>text</gradient> (2+ colors, &l etc. work inside)
-# Palette: blood #5A0000 | dark red #A80000 | orange #FF8C1A | ember #FFB366 | cream #FFE4C7
-prefix: "&#5A0000&l☾ <gradient:#FF8C1A:#A80000>&lConi</gradient> &#5A0000» &#FFB366"
-
-# Random scares that run on their own while /coni toggle on is active.
-# (Whether auto mode is ON is saved in data.yml so it survives restarts.)
+# -----------------------------------------------------------------------------
+#  Auto scares: random scares that run on their own while /coni toggle is ON.
+#  (Whether auto mode is ON is saved in data.yml so it survives restarts.)
+# -----------------------------------------------------------------------------
 auto:
-  # How often the plugin rolls for each online player (seconds)
+  # How often the plugin rolls for each online player (seconds, minimum 5)
   check-interval-seconds: 30
   # Chance (0.0 - 1.0) that a player gets scared on each roll
   chance-per-check: 0.08
   # Minimum time between auto scares for the same player (seconds)
   player-cooldown-seconds: 300
-  # Only scare at night (world time 13000 - 23000)
+  # Only scare at night (world time 13000 - 23000). Nether and End always count as night.
   night-only: false
   # Only scare players standing somewhere dark (light level 7 or less)
   dark-only: false
@@ -24,6 +30,16 @@ auto:
   survival-only: true
   # Worlds where auto scares can happen. Empty list = all worlds.
   worlds: []
+  # NEW: never scare a player who has one of these shared CopeCore states.
+  # Other Cope plugins set them: combat (CSCombat), in-duel / in-arena (CSSPVP),
+  # boss-fight (Cope Bosses), editing (someone typing in an editor).
+  # The same list is used for Blood Moon scares. [] = scare everyone.
+  skip-states:
+    - combat
+    - in-duel
+    - in-arena
+    - boss-fight
+    - editing
   # Weights for which scare gets picked. 0 = never picked by auto mode.
   weights:
     SOUNDS: 30
@@ -45,6 +61,9 @@ auto:
     SURROUNDED: 10
     PHANTOM_HIT: 8
 
+# -----------------------------------------------------------------------------
+#  Herobrine
+# -----------------------------------------------------------------------------
 herobrine:
   # Account name whose skin is used for the head. Swap this for any
   # account that wears a Herobrine skin if the default looks wrong.
@@ -63,34 +82,11 @@ herobrine:
   # Stalker (STALKER) - stands right behind the player until they turn around
   stalker-lifetime-seconds: 10
 
-whisper:
-  # %msg% is replaced with one of the lines below
-  format: "<gradient:#A80000:#5A0000><Herobrine></gradient> &#FFB366&o%msg%"
-  messages:
-    - "I see you."
-    - "Behind you."
-    - "Why are you still here?"
-    - "You shouldn't have come down here."
-    - "Don't turn around."
-    - "..."
-
-jumpscare:
-  title: "<gradient:#FF2A00:#5A0000>&l☠</gradient>"
-  subtitle: "<gradient:#FFB366:#A80000>&ofound you</gradient>"
-
-# SKY_DROP: yanked into the sky, free fall, then put back exactly where they stood.
-# Fall damage is always cancelled. ~2.5s of falling from 100 blocks gets them close to the ground.
+# -----------------------------------------------------------------------------
+#  SKY_DROP: yanked into the sky, free fall, then put back exactly where they stood.
+#  Fall damage is always cancelled. ~2.5s of falling from 100 blocks gets them
+#  close to the ground. (The title texts are in messages.yml: scares.sky-drop)
+# -----------------------------------------------------------------------------
 sky-drop:
   height: 100
   seconds: 2.5
-  title: "<gradient:#FF8C1A:#5A0000>&lFALLING</gradient>"
-  subtitle: "<gradient:#FFB366:#A80000>&ohe let go of you</gradient>"
-
-# FAKE_JOIN: fake join message only the target sees
-fake-join:
-  name: "Herobrine"
-  messages:
-    - "hi %player%"
-    - "why are you alone"
-    - "i'm in your base"
-    - "don't log off"

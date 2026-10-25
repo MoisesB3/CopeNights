@@ -1,20 +1,30 @@
-package us.copestudios.copenights;
+package us.copestudios.copenights.bloodmoon;
 
 import org.bukkit.Material;
-import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.configuration.ConfigurationSection;
+import us.copestudios.copecore.config.ConfigFile;
+import us.copestudios.copenights.CopeNights;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
+import java.math.BigDecimal;
 import java.util.List;
 
-/** Wraps bloodmoon.yml. Everything the GUI can change is a {@link Setting}. */
-public class BloodMoonSettings {
+/**
+ * bloodmoon.yml. Every value the in-game menu can change is a {@link Setting}; the lists (worlds, mobs,
+ * bosses, commands) have their own getters.
+ *
+ * <p>The file is loaded through CopeCore's {@link ConfigFile}: new settings from updates are added to it
+ * automatically, a broken file is repaired, and comments are kept when the menu saves.</p>
+ */
+public final class BloodMoonSettings {
 
-    public enum Kind { BOOL, INT, DOUBLE }
+    /** What kind of value a setting holds (decides how the menu edits and shows it). */
+    public enum Kind { BOOL, INT, DOUBLE, PERCENT }
 
+    /**
+     * Everything editable in /coni bloodmoon.
+     * <p>name = the button title, description = its first lore line. Both can be changed in messages.yml under
+     * {@code menu.settings.<path>.name} / {@code .description} (optional: the English text below is used otherwise).</p>
+     */
     public enum Setting {
         ENABLED("enabled", "Blood Moons Enabled", Material.REDSTONE_TORCH, Kind.BOOL, 0, 0, 0,
                 "Automatic blood moons on/off"),
@@ -28,11 +38,11 @@ public class BloodMoonSettings {
                 "Multiplies damage dealt by blood moon mobs"),
         SPEED_MULTIPLIER("speed-multiplier", "Mob Speed", Material.SUGAR, Kind.DOUBLE, 1, 3, 0.05,
                 "Multiplies blood moon mob movement speed"),
-        GIANT_CHANCE("giant-chance", "Giant Chance", Material.SLIME_BALL, Kind.DOUBLE, 0, 1, 0.05,
+        GIANT_CHANCE("giant-chance", "Giant Chance", Material.SLIME_BALL, Kind.PERCENT, 0, 1, 0.05,
                 "Chance a mob spawns as a giant"),
         GIANT_SCALE("giant-scale", "Giant Size", Material.PISTON, Kind.DOUBLE, 1, 4, 0.1,
                 "How big giants are (1.0 = normal)"),
-        SPECIAL_CHANCE("special-chance", "Special Mob Chance", Material.WITHER_SKELETON_SKULL, Kind.DOUBLE, 0, 1, 0.05,
+        SPECIAL_CHANCE("special-chance", "Special Mob Chance", Material.WITHER_SKELETON_SKULL, Kind.PERCENT, 0, 1, 0.05,
                 "Chance a spawn is swapped for a special mob"),
         MAX_MOBS("max-mobs", "Max Mobs Per World", Material.HOPPER, Kind.INT, 25, 2000, 25,
                 "Lag safety cap for blood moon mobs"),
@@ -60,12 +70,12 @@ public class BloodMoonSettings {
                 "Random scares all night (works even with /coni toggle off)"),
         SCARE_INTERVAL("scare-interval-seconds", "Scare Roll Interval", Material.REPEATER, Kind.INT, 10, 300, 10,
                 "Seconds between scare rolls for each player"),
-        SCARE_CHANCE("scare-chance", "Scare Chance", Material.FERMENTED_SPIDER_EYE, Kind.DOUBLE, 0, 1, 0.05,
+        SCARE_CHANCE("scare-chance", "Scare Chance", Material.FERMENTED_SPIDER_EYE, Kind.PERCENT, 0, 1, 0.05,
                 "Chance each player gets scared on every roll"),
         DEATH_MESSAGES("death-messages", "Custom Death Messages", Material.SKELETON_SKULL, Kind.BOOL, 0, 0, 0,
                 "Coni death messages for horde, mob and player kills"),
 
-        // ---- Horde page ----
+        // ---- Horde page (every name starting with HORDE) ----
         HORDES("hordes", "Auto Hordes", Material.GOAT_HORN, Kind.BOOL, 0, 0, 0,
                 "Waves of hordes hit random players during blood moons"),
         HORDE_FIRST_DELAY("horde-first-delay-seconds", "First Wave Delay", Material.CLOCK, Kind.INT, 0, 600, 10,
@@ -86,20 +96,21 @@ public class BloodMoonSettings {
                 "How far from the player the horde appears"),
         HORDE_CAPTAIN("horde-captain", "Horde Captain", Material.GOLDEN_HELMET, Kind.BOOL, 0, 0, 0,
                 "Each horde is led by a glowing giant captain"),
-        HORDE_BOSS_CHANCE("horde-boss-chance", "Boss Chance", Material.DRAGON_EGG, Kind.DOUBLE, 0, 1, 0.05,
+        HORDE_BOSS_CHANCE("horde-boss-chance", "Boss Chance", Material.DRAGON_EGG, Kind.PERCENT, 0, 1, 0.05,
                 "Chance a horde brings a Cope Bosses boss");
 
+        /** Key in bloodmoon.yml. */
         public final String path;
+        /** Default English button name. */
         public final String display;
         public final Material icon;
         public final Kind kind;
-        public final double min, max, step;
+        public final double min;
+        public final double max;
+        /** One click = one step (shift-click = 10 steps, Q = type a value). */
+        public final double step;
+        /** Default English description. */
         public final String description;
-
-        /** true = shown on the Horde Settings page instead of the main page */
-        public boolean isHorde() {
-            return name().startsWith("HORDE");
-        }
 
         Setting(String path, String display, Material icon, Kind kind,
                 double min, double max, double step, String description) {
@@ -112,149 +123,161 @@ public class BloodMoonSettings {
             this.step = step;
             this.description = description;
         }
+
+        /** True = shown on the Horde Settings page instead of the main page. */
+        public boolean isHorde() {
+            return name().startsWith("HORDE");
+        }
+
+        /** True = edited with the number controls (anything that isn't on/off). */
+        public boolean isNumber() {
+            return kind != Kind.BOOL;
+        }
+
+        /**
+         * The Minecraft version this setting needs, or null if it works everywhere.
+         * Giants use the "scale" attribute, which only exists on 1.20.5+.
+         */
+        public String requiredVersion() {
+            return this == GIANT_CHANCE || this == GIANT_SCALE ? "1.20.5" : null;
+        }
     }
 
     private final CopeNights plugin;
-    private File file;
-    private YamlConfiguration cfg;
+    private final ConfigFile file;
 
     public BloodMoonSettings(CopeNights plugin) {
         this.plugin = plugin;
+        this.file = new ConfigFile(plugin, "bloodmoon.yml");
     }
 
-    public void load() {
-        file = new File(plugin.getDataFolder(), "bloodmoon.yml");
-        if (!file.exists()) plugin.saveResource("bloodmoon.yml", false);
-        cfg = YamlConfiguration.loadConfiguration(file);
-        InputStream in = plugin.getResource("bloodmoon.yml");
-        if (in != null) {
-            cfg.setDefaults(YamlConfiguration.loadConfiguration(new InputStreamReader(in, StandardCharsets.UTF_8)));
+    /** Re-reads bloodmoon.yml from disk. */
+    public void reload() {
+        file.reload();
+    }
+
+    /** The underlying file (used by the upgrade from old versions). */
+    public ConfigFile file() {
+        return file;
+    }
+
+    // =====================================================================
+    //  Setting values
+    // =====================================================================
+
+    public boolean getBool(Setting setting) {
+        return file.get().getBoolean(setting.path);
+    }
+
+    public int getInt(Setting setting) {
+        return file.get().getInt(setting.path);
+    }
+
+    public double getDouble(Setting setting) {
+        return file.get().getDouble(setting.path);
+    }
+
+    /** Flips an on/off setting and saves. */
+    public void toggle(Setting setting) {
+        file.get().set(setting.path, !getBool(setting));
+        file.save();
+    }
+
+    /** Sets a number setting (clamped to its min/max) and saves. */
+    public void set(Setting setting, double value) {
+        double clamped = Math.max(setting.min, Math.min(setting.max, value));
+        if (setting.kind == Kind.INT) {
+            file.get().set(setting.path, (int) Math.round(clamped));
+        } else {
+            file.get().set(setting.path, Math.round(clamped * 100.0) / 100.0);
         }
+        file.save();
     }
 
-    public void save() {
-        try {
-            cfg.save(file);
-        } catch (IOException e) {
-            plugin.getLogger().warning("Could not save bloodmoon.yml: " + e.getMessage());
-        }
-    }
-
-    // ---------- values ----------
-
-    public boolean getBool(Setting s) {
-        return cfg.getBoolean(s.path);
-    }
-
-    public int getInt(Setting s) {
-        return cfg.getInt(s.path);
-    }
-
-    public double getDouble(Setting s) {
-        return cfg.getDouble(s.path);
-    }
-
-    public String display(Setting s) {
-        return switch (s.kind) {
-            case BOOL -> getBool(s) ? C.onOff(true) : C.onOff(false);
-            case INT -> C.H + getInt(s);
-            case DOUBLE -> {
-                double v = getDouble(s);
-                yield (s == Setting.GIANT_CHANCE || s == Setting.SPECIAL_CHANCE || s == Setting.HORDE_BOSS_CHANCE || s == Setting.SCARE_CHANCE)
-                        ? C.H + Math.round(v * 100) + "%"
-                        : C.H + trim(v) + "x";
-            }
+    /** The current value as a number (on/off settings give 1 or 0). */
+    public double numberValue(Setting setting) {
+        return switch (setting.kind) {
+            case BOOL -> getBool(setting) ? 1 : 0;
+            case INT -> getInt(setting);
+            case DOUBLE, PERCENT -> getDouble(setting);
         };
     }
 
-    /** dir = +1 / -1, big = shift-click (5 steps). Booleans just flip. */
-    public void adjust(Setting s, int dir, boolean big) {
-        switch (s.kind) {
-            case BOOL -> cfg.set(s.path, !getBool(s));
-            case INT -> {
-                int v = getInt(s) + (int) (s.step * dir * (big ? 5 : 1));
-                cfg.set(s.path, (int) clamp(v, s.min, s.max));
-            }
-            case DOUBLE -> {
-                double v = getDouble(s) + s.step * dir * (big ? 5 : 1);
-                v = Math.round(clamp(v, s.min, s.max) * 100.0) / 100.0;
-                cfg.set(s.path, v);
-            }
-        }
-        save();
+    /**
+     * The value as MiniMessage text for the menu and /coni bloodmoon status:
+     * ON/OFF from messages.yml, "7", "1.5x" or "20%".
+     */
+    public String display(Setting setting) {
+        String value = switch (setting.kind) {
+            case BOOL -> null;
+            case INT -> String.valueOf(getInt(setting));
+            case DOUBLE -> trim(getDouble(setting)) + "x";
+            case PERCENT -> Math.round(getDouble(setting) * 100) + "%";
+        };
+        return value == null ? plugin.onOff(getBool(setting)) : "<#FFE4C7>" + value;
     }
 
+    // =====================================================================
+    //  Lists and texts
+    // =====================================================================
+
+    /** Worlds that get blood moons. Empty = every overworld-type world. */
     public List<String> worlds() {
-        return cfg.getStringList("worlds");
+        return file.get().getStringList("worlds");
     }
 
     public List<String> specialMobs() {
-        return cfg.getStringList("special-mobs");
+        return file.get().getStringList("special-mobs");
     }
 
     public void setSpecialMobs(List<String> mobs) {
-        cfg.set("special-mobs", mobs);
-        save();
+        file.get().set("special-mobs", mobs);
+        file.save();
     }
 
     public List<String> hordeMobs() {
-        return cfg.getStringList("horde-mobs");
+        return file.get().getStringList("horde-mobs");
+    }
+
+    /** CopeCore states that keep a player from being picked for automatic hordes. */
+    public List<String> hordeSkipStates() {
+        return file.get().getStringList("horde-skip-states");
     }
 
     public List<String> hordeBosses() {
-        return cfg.getStringList("horde-bosses");
+        return file.get().getStringList("horde-bosses");
     }
 
     public String hordeBossCommand() {
-        return cfg.getString("horde-boss-command", "cb spawn %boss%");
+        return file.get().getString("horde-boss-command", "cb spawn <boss>");
     }
 
     public boolean hordeBossRunAsPlayer() {
-        return "player".equalsIgnoreCase(cfg.getString("horde-boss-run-as", "player"));
+        return "player".equalsIgnoreCase(file.get().getString("horde-boss-run-as", "player"));
     }
 
     public List<String> hordeBossPermissions() {
-        return cfg.getStringList("horde-boss-permissions");
+        return file.get().getStringList("horde-boss-permissions");
     }
 
-    public List<String> deathMessages(String type) {
-        return cfg.getStringList("death-messages-text." + type);
+    public ConfigurationSection scareWeights() {
+        return file.get().getConfigurationSection("scare-weights");
     }
 
-    public org.bukkit.configuration.ConfigurationSection scareWeights() {
-        return cfg.getConfigurationSection("scare-weights");
-    }
-
-    public String startScare() {
-        return cfg.getString("moonrise-scare", "LIGHTS_OUT");
+    public String moonriseScare() {
+        return file.get().getString("moonrise-scare", "LIGHTS_OUT");
     }
 
     public List<String> hordeWarningScares() {
-        return cfg.getStringList("horde-warning-scares");
+        return file.get().getStringList("horde-warning-scares");
     }
 
     public List<String> rewardCommands() {
-        return cfg.getStringList("reward-commands");
+        return file.get().getStringList("reward-commands");
     }
 
-    public String msg(String key) {
-        return CopeNights.color(cfg.getString("messages." + key, ""));
-    }
-
-    /** Fills placeholders first, then colors - so gradients over %player% etc. come out right. */
-    public String msg(String key, String... placeholderValuePairs) {
-        String raw = cfg.getString("messages." + key, "");
-        for (int i = 0; i + 1 < placeholderValuePairs.length; i += 2) {
-            raw = raw.replace(placeholderValuePairs[i], placeholderValuePairs[i + 1]);
-        }
-        return CopeNights.color(raw);
-    }
-
-    private static double clamp(double v, double min, double max) {
-        return Math.max(min, Math.min(max, v));
-    }
-
-    private static String trim(double v) {
-        return v == Math.floor(v) ? String.valueOf((long) v) : String.valueOf(v);
+    /** 2.0 -> "2", 1.25 -> "1.25" */
+    private static String trim(double value) {
+        return BigDecimal.valueOf(value).stripTrailingZeros().toPlainString();
     }
 }

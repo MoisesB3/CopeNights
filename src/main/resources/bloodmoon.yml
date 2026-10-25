@@ -1,8 +1,11 @@
-# ============================================
+# =============================================================================
 #  Cope Nights - bloodmoon.yml
 #  Most of this is editable in-game: /coni bloodmoon
-#  (Saving from the menu rewrites this file, so comments may disappear.)
-# ============================================
+#  (The menu keeps the comments in this file when it saves.)
+#
+#  All Blood Moon TEXTS (titles, boss bar, wave announcements, death messages)
+#  are in messages.yml under "bloodmoon:" and "death:".
+# =============================================================================
 
 enabled: true
 # A blood moon happens on every Nth Minecraft day (day 7, 14, 21... with 7)
@@ -17,13 +20,15 @@ spawn-multiplier: 2.0
 health-multiplier: 1.5
 damage-multiplier: 1.5
 speed-multiplier: 1.15
-# Chance a blood moon mob is a giant, and how big giants get
+# Chance a blood moon mob is a giant, and how big giants get.
+# Giants need Minecraft 1.20.5 or newer (the "scale" attribute). On older servers they are skipped.
 giant-chance: 0.10
 giant-scale: 1.8
 # Chance a natural spawn is swapped for one of the special-mobs below
 special-chance: 0.20
 # Safety cap: max blood moon mobs alive per world
 max-mobs: 400
+# Mobs that don't exist on your server version (e.g. BOGGED and BREEZE need 1.21) are skipped automatically.
 special-mobs:
   - WITHER_SKELETON
   - VINDICATOR
@@ -62,6 +67,12 @@ horde-mobs:
   - CREEPER
   - ZOMBIE_VILLAGER
   - DROWNED
+# NEW: automatic hordes skip players with one of these CopeCore states
+# (nobody gets a horde in the middle of a duel or an arena fight). [] = nobody is skipped.
+horde-skip-states:
+  - in-duel
+  - in-arena
+  - boss-fight
 
 # --- Horde bosses (Cope Bosses) ---
 # Chance each horde also brings a boss
@@ -74,11 +85,11 @@ horde-bosses:
   - skeleton-king
   - storm-caller
   - wizard
-# Placeholders: %boss% %player% %world% %x% %y% %z%
-horde-boss-command: "cb spawn %boss%"
+# Placeholders: <boss> <player> <world> <x> <y> <z>  (the old %boss% style also works)
+horde-boss-command: "cb spawn <boss>"
 # player  = run as the horde's target, so the boss spawns where they stand
 #           (they get the permissions below for that one command only)
-# console = run from console (use %x% %y% %z% if your command takes coordinates)
+# console = run from console (use <x> <y> <z> if your command takes coordinates)
 horde-boss-run-as: player
 horde-boss-permissions:
   - copebosses.admin
@@ -88,9 +99,10 @@ horde-boss-permissions:
 drop-multiplier: 1.5
 xp-multiplier: 2.0
 survivor-rewards: true
-# Run from console for every player in the world who didn't die during the blood moon
+# Run from console for every player in the world who didn't die during the blood moon.
+# Placeholder: <player>  (the old %player% style also works)
 reward-commands:
-  - "give %player% minecraft:golden_apple 1"
+  - "give <player> minecraft:golden_apple 1"
 
 # --- Atmosphere ---
 block-sleep: true
@@ -98,8 +110,10 @@ red-sky: true
 boss-bar: true
 thunder: true
 despawn-at-end: true
+
 # --- Blood moon scares ---
 # Runs all night on survival players, even when /coni toggle is OFF.
+# Players with a state from config.yml "auto.skip-states" are never scared.
 scares: true
 scare-interval-seconds: 40
 # Chance each player gets scared every roll
@@ -135,40 +149,5 @@ scare-weights:
 # Extra multiplier for the normal /coni auto scares during a blood moon (needs /coni toggle on)
 scare-boost: 2.5
 announce: true
-# Coni death messages for horde / blood moon mob / mob / player kills
+# Coni death messages for horde / blood moon mob / mob / player kills (texts: messages.yml "death:")
 death-messages: true
-
-# Colors:
-#   &#RRGGBB                                  single RGB color
-#   <gradient:#A80000:#FF8C1A>text</gradient> smooth gradient (2+ colors, & formats like &l work inside)
-#   Palette: blood #5A0000 | dark red #A80000 | orange #FF8C1A | ember #FFB366 | cream #FFE4C7
-messages:
-  warning: "&#FF8C1A☾ &#FFB366The sun sets... and the moon is turning <gradient:#FF2A00:#A80000>&lred</gradient>&#FFB366."
-  start-title: "<gradient:#5A0000:#FF2A00:#5A0000>&lBLOOD MOON</gradient>"
-  start-subtitle: "<gradient:#FFB366:#FF8C1A>the dead walk tonight</gradient>"
-  end: "&#FFB366The blood moon fades. You survived... <gradient:#A80000:#5A0000>&ofor now.</gradient>"
-  no-sleep: "&#FFB366You can't sleep during a <gradient:#FF2A00:#A80000>&lBlood Moon</gradient>&#FFB366!"
-  bossbar: "<gradient:#FF2A00:#A80000>&lBlood Moon</gradient> &#5A0000| &#FFB366Wave &#FFE4C7&l%wave% &#5A0000| &#FFB366Kills &#FFE4C7&l%kills%"
-  survived-title: "<gradient:#FFE4C7:#FF8C1A>&lSURVIVED</gradient>"
-  survived-subtitle: "<gradient:#A80000:#5A0000>the blood moon has set</gradient>"
-  horde-title: "<gradient:#FF2A00:#5A0000>&lHORDE</gradient>"
-  horde-subtitle: "&#FFB366wave &#FFE4C7&l%wave% &#FFB366is coming for you"
-  horde-captain: "<gradient:#FF8C1A:#A80000>&l☠ Horde Captain ☠</gradient>"
-  wave-announce: "<gradient:#FF8C1A:#A80000>&l⚔ WAVE %wave%</gradient> &#5A0000» &#FFE4C7%hordes% &#FFB366horde(s) of &#FFE4C7%size% &#FFB366have risen!"
-  boss-announce: "&#A80000&l☠ <gradient:#FF2A00:#FF8C1A>&l%boss%</gradient> &#FFB366leads the horde hunting &#FFE4C7%player%&#FFB366!"
-
-# Death messages (one is picked at random). Placeholders: %player% %mob% %killer% %weapon% %wave%
-death-messages-text:
-  horde:
-    - "&#A80000☠ &#FFE4C7%player% &#FFB366was torn apart by a <gradient:#FF2A00:#A80000>&lhorde</gradient> &#FFB366on wave &#FFE4C7%wave%"
-    - "&#A80000☠ &#FFE4C7%player% &#FFB366was overrun. <gradient:#FF8C1A:#A80000>%mob%</gradient> &#FFB366landed the final blow."
-    - "&#A80000☠ <gradient:#FF8C1A:#A80000>The horde</gradient> &#FFB366dragged &#FFE4C7%player% &#FFB366into the dark."
-  bloodmoon:
-    - "&#A80000☾ &#FFE4C7%player% &#FFB366was claimed by the <gradient:#FF2A00:#5A0000>&lBlood Moon</gradient>"
-    - "&#A80000☾ <gradient:#FF8C1A:#A80000>%mob%</gradient> &#FFB366fed &#FFE4C7%player% &#FFB366to the red moon"
-  mob:
-    - "&#A80000☠ &#FFE4C7%player% &#FFB366was slain by <gradient:#FF8C1A:#A80000>%mob%</gradient>"
-    - "&#A80000☠ <gradient:#FF8C1A:#A80000>%mob%</gradient> &#FFB366made quick work of &#FFE4C7%player%"
-  player:
-    - "&#A80000⚔ &#FFE4C7%player% &#FFB366was killed by <gradient:#FF8C1A:#A80000>%killer%</gradient> &#FFB366using &#FFE4C7%weapon%"
-    - "&#A80000⚔ <gradient:#FF8C1A:#A80000>%killer%</gradient> &#FFB366ended &#FFE4C7%player%"

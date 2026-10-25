@@ -1,0 +1,60 @@
+# =============================================================================
+#  Cope Nights - the DEFAULT texts of Cope Nights 0.0.32 and older.
+#  Used once, when upgrading: a text in your old config.yml / bloodmoon.yml is
+#  only copied into messages.yml if it is DIFFERENT from the value below (so you
+#  customized it). Untouched texts get the new defaults instead.
+#  This file stays inside the jar; it is never written to your plugin folder.
+# =============================================================================
+config:
+  prefix: '&#5A0000&l☾ <gradient:#FF8C1A:#A80000>&lConi</gradient> &#5A0000» &#FFB366'
+  whisper:
+    format: <gradient:#A80000:#5A0000><Herobrine></gradient> &#FFB366&o%msg%
+    messages:
+    - I see you.
+    - Behind you.
+    - Why are you still here?
+    - You shouldn't have come down here.
+    - Don't turn around.
+    - '...'
+  jumpscare:
+    title: <gradient:#FF2A00:#5A0000>&l☠</gradient>
+    subtitle: <gradient:#FFB366:#A80000>&ofound you</gradient>
+  sky-drop:
+    title: <gradient:#FF8C1A:#5A0000>&lFALLING</gradient>
+    subtitle: <gradient:#FFB366:#A80000>&ohe let go of you</gradient>
+  fake-join:
+    name: Herobrine
+    messages:
+    - hi %player%
+    - why are you alone
+    - i'm in your base
+    - don't log off
+bloodmoon:
+  messages:
+    warning: '&#FF8C1A☾ &#FFB366The sun sets... and the moon is turning <gradient:#FF2A00:#A80000>&lred</gradient>&#FFB366.'
+    start-title: <gradient:#5A0000:#FF2A00:#5A0000>&lBLOOD MOON</gradient>
+    start-subtitle: <gradient:#FFB366:#FF8C1A>the dead walk tonight</gradient>
+    end: '&#FFB366The blood moon fades. You survived... <gradient:#A80000:#5A0000>&ofor now.</gradient>'
+    no-sleep: '&#FFB366You can''t sleep during a <gradient:#FF2A00:#A80000>&lBlood Moon</gradient>&#FFB366!'
+    bossbar: <gradient:#FF2A00:#A80000>&lBlood Moon</gradient> &#5A0000| &#FFB366Wave &#FFE4C7&l%wave% &#5A0000| &#FFB366Kills &#FFE4C7&l%kills%
+    survived-title: <gradient:#FFE4C7:#FF8C1A>&lSURVIVED</gradient>
+    survived-subtitle: <gradient:#A80000:#5A0000>the blood moon has set</gradient>
+    horde-title: <gradient:#FF2A00:#5A0000>&lHORDE</gradient>
+    horde-subtitle: '&#FFB366wave &#FFE4C7&l%wave% &#FFB366is coming for you'
+    horde-captain: <gradient:#FF8C1A:#A80000>&l☠ Horde Captain ☠</gradient>
+    wave-announce: <gradient:#FF8C1A:#A80000>&l⚔ WAVE %wave%</gradient> &#5A0000» &#FFE4C7%hordes% &#FFB366horde(s) of &#FFE4C7%size% &#FFB366have risen!
+    boss-announce: '&#A80000&l☠ <gradient:#FF2A00:#FF8C1A>&l%boss%</gradient> &#FFB366leads the horde hunting &#FFE4C7%player%&#FFB366!'
+  death-messages-text:
+    horde:
+    - '&#A80000☠ &#FFE4C7%player% &#FFB366was torn apart by a <gradient:#FF2A00:#A80000>&lhorde</gradient> &#FFB366on wave &#FFE4C7%wave%'
+    - '&#A80000☠ &#FFE4C7%player% &#FFB366was overrun. <gradient:#FF8C1A:#A80000>%mob%</gradient> &#FFB366landed the final blow.'
+    - '&#A80000☠ <gradient:#FF8C1A:#A80000>The horde</gradient> &#FFB366dragged &#FFE4C7%player% &#FFB366into the dark.'
+    bloodmoon:
+    - '&#A80000☾ &#FFE4C7%player% &#FFB366was claimed by the <gradient:#FF2A00:#5A0000>&lBlood Moon</gradient>'
+    - '&#A80000☾ <gradient:#FF8C1A:#A80000>%mob%</gradient> &#FFB366fed &#FFE4C7%player% &#FFB366to the red moon'
+    mob:
+    - '&#A80000☠ &#FFE4C7%player% &#FFB366was slain by <gradient:#FF8C1A:#A80000>%mob%</gradient>'
+    - '&#A80000☠ <gradient:#FF8C1A:#A80000>%mob%</gradient> &#FFB366made quick work of &#FFE4C7%player%'
+    player:
+    - '&#A80000⚔ &#FFE4C7%player% &#FFB366was killed by <gradient:#FF8C1A:#A80000>%killer%</gradient> &#FFB366using &#FFE4C7%weapon%'
+    - '&#A80000⚔ <gradient:#FF8C1A:#A80000>%killer%</gradient> &#FFB366ended &#FFE4C7%player%'

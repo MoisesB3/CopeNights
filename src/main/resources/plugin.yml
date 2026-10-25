@@ -1,20 +1,33 @@
+# =============================================================================
+#  Cope Nights - plugin.yml
+#  ${project.version} is filled in by Maven when you build.
+# =============================================================================
+
 name: CopeNights
 version: '${project.version}'
 main: us.copestudios.copenights.CopeNights
-api-version: '1.21'
+# Works on 1.20.1 and every newer version.
+api-version: '1.20'
 author: Z3R0 / Cope Studios
+website: https://copestudios.us
 description: Cope Nights - jump scares, Herobrine, Blood Moons and hordes.
+
+# CopeCore provides colors, messages, menus and commands. It must load first.
+depend: [CopeCore]
+# Optional: Cope Bosses (horde bosses) and PlaceholderAPI (%cope_nights_...%).
+softdepend: [CopeBosses, PlaceholderAPI]
 
 commands:
   coni:
     description: Cope Nights - scares and Blood Moon controls.
     usage: /coni help
     aliases: [cosc, copenights]
+    permission: copenights.admin
 
 permissions:
   copenights.admin:
     description: Use all /coni commands and the Blood Moon menu.
     default: op
   copenights.exempt:
-    description: Never targeted by random scares.
+    description: Never targeted by random scares (auto mode and Blood Moon scares).
     default: false

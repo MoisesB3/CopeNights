@@ -1,0 +1,261 @@
+# =============================================================================
+#  Cope Nights - messages.yml
+#  Every text the plugin shows. /coni reload after editing.
+# =============================================================================
+#
+#  FORMATTING (handled by CopeCore - all of these work, even mixed):
+#    MiniMessage:  <#FF8C1A>  <bold>  <italic>  <gradient:#FF8C1A:#A80000>text</gradient>
+#                  <hover:show_text:'tooltip'>  <click:run_command:'/spawn'>  <click:suggest_command:'/coni '>
+#    Old codes:    &#FF8C1A   &l  &o   &c   (your old Cope Nights texts keep working)
+#
+#  PALETTE used by the defaults:
+#    blood #5A0000 | dark red #A80000 | orange #FF8C1A | ember #FFB366 | cream #FFE4C7
+#    gray #9A8F86  | on #7CFF6B       | off #FF4A3D
+#
+#  PLACEHOLDERS are written <name>, {name} or %name% (all three work).
+#  Each message lists the ones it supports.
+#
+#  Set a message to "" to turn it off. If you upgraded from an older Cope Nights,
+#  your customized texts from config.yml / bloodmoon.yml were copied in here.
+# =============================================================================
+
+prefix: "<#5A0000><bold>☾</bold></#5A0000> <gradient:#FF8C1A:#A80000><bold>Coni</bold></gradient> <#5A0000>»</#5A0000> "
+
+# -----------------------------------------------------------------------------
+#  Overrides of CopeCore's shared texts, styled for Cope Nights.
+#  (Delete a line here to use CopeCore's default instead.)
+# -----------------------------------------------------------------------------
+generic:
+  no-permission: "<#A80000>No permission."
+  help-header: "<gradient:#5A0000:#A80000>▬▬▬▬▬▬▬▬▬</gradient> <gradient:#FF8C1A:#A80000><bold>Cope Nights</bold></gradient> <gradient:#A80000:#5A0000>▬▬▬▬▬▬▬▬▬</gradient>"
+  # Each help line is clickable: it types the command for you. <command> <usage> <description>
+  help-line: "<click:suggest_command:'/<command> '><hover:show_text:'<#FFB366>Click to type <#FF8C1A>/<command>'><#A80000>  ▸ </#A80000><#FF8C1A>/<command></#FF8C1A> <#9A8F86><usage></#9A8F86> <#5A0000>-</#5A0000> <#FFB366><description></hover></click>"
+  help-footer: "<gradient:#5A0000:#A80000:#FF8C1A:#A80000:#5A0000>▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬</gradient>"
+  help-command: "Show this list"
+
+# -----------------------------------------------------------------------------
+#  Small pieces reused by other messages
+# -----------------------------------------------------------------------------
+common:
+  "on": "<#7CFF6B><bold>✔ ON</bold></#7CFF6B>"
+  "off": "<#FF4A3D><bold>✘ OFF</bold></#FF4A3D>"
+  # Section headers on /coni status, list, bloodmoon status. <title>
+  header: "<gradient:#5A0000:#A80000>▬▬▬▬▬▬▬▬▬</gradient> <gradient:#FF8C1A:#A80000><bold><title></bold></gradient> <gradient:#A80000:#5A0000>▬▬▬▬▬▬▬▬▬</gradient>"
+  footer: "<gradient:#5A0000:#A80000:#FF8C1A:#A80000:#5A0000>▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬</gradient>"
+
+# -----------------------------------------------------------------------------
+#  /coni
+# -----------------------------------------------------------------------------
+command:
+  # Help page descriptions
+  help:
+    scare: "scare someone"
+    toggle: "random server-wide scares"
+    list: "all scare types"
+    status: "auto scare settings"
+    exempt: "skip a player in auto scares"
+    clear: "remove every active Herobrine"
+    bloodmoon: "menu, start, stop, status or summon a horde"
+    reload: "reload config.yml, bloodmoon.yml and messages.yml"
+
+  # /coni <player|all|random> [type]   <input>
+  unknown-type: "<#A80000>Unknown scare type <#FFE4C7><input></#FFE4C7>. Try <click:run_command:'/coni list'><#FFE4C7><u>/coni list</u></#FFE4C7></click>."
+  no-target: "<#A80000>No matching online player: <#FFE4C7><input>"
+  scare-failed: "<#A80000>Couldn't run that scare right now."
+  # <player> <type>
+  scare-one: "<#FFB366>Hit <#FFE4C7><player></#FFE4C7> with <#A80000><type></#A80000>."
+  # <count> <type>
+  scare-many: "<#FFB366>Scared <#FFE4C7><count></#FFE4C7> player(s) with <#A80000><type></#A80000>."
+
+  # /coni toggle   <state> = common.on / common.off
+  toggle-invalid: "<#A80000>Use <#FFE4C7>on</#FFE4C7> or <#FFE4C7>off</#FFE4C7>."
+  toggled: "<#FFB366>Server-wide random scares: <state>"
+
+  # /coni status
+  status-title: "Auto Scares"
+  # <state>
+  status-enabled: "<#A80000>  ▸ </#A80000><#FFB366>Server-wide: <state>"
+  # <interval> <chance> <cooldown>
+  status-timing: "<#A80000>  ▸ </#A80000><#FFB366>Roll every <#FFE4C7><interval>s</#FFE4C7> <#5A0000>|</#5A0000> Chance <#FFE4C7><chance>%</#FFE4C7> <#5A0000>|</#5A0000> Cooldown <#FFE4C7><cooldown>s"
+  # <night> <dark> <survival> (each common.on / common.off)
+  status-filters: "<#A80000>  ▸ </#A80000><#FFB366>Night only <night>  <#FFB366>Dark only <dark>  <#FFB366>Survival only <survival>"
+  # <states> = the skip-states list
+  status-skip: "<#A80000>  ▸ </#A80000><#FFB366>Skips players who are: <#FFE4C7><states>"
+
+  # /coni list   <type> <description> <player> (the person reading, for the click)
+  list-title: "Scare Types"
+  list-line: "<click:suggest_command:'/coni <player> <type>'><hover:show_text:'<#FFB366>Click to try <#FF8C1A><type></#FF8C1A> on yourself'><#A80000>  ▸ </#A80000><gradient:#FF8C1A:#A80000><type></gradient> <#5A0000>-</#5A0000> <#FFB366><description></hover></click>"
+
+  # /coni exempt <player>   <player>
+  exempt-on: "<#FFE4C7><player></#FFE4C7> <#FFB366>is <#7CFF6B>now exempt</#7CFF6B> from auto scares."
+  exempt-off: "<#FFE4C7><player></#FFE4C7> <#FFB366>is <#A80000>no longer exempt</#A80000> from auto scares."
+
+  # /coni clear   <count>
+  cleared: "<#FFB366>Removed <#FFE4C7><count></#FFE4C7> active Herobrine(s)."
+
+  # /coni bloodmoon ...
+  bm-unknown: "<#A80000>Use <#FFE4C7>/coni bloodmoon [menu|start|stop|status|horde]"
+  bm-menu-console: "<#A80000>The menu is in-game only. Use start, stop or status."
+  bm-bad-world: "<#A80000>That world can't have blood moons (see <#FFE4C7>worlds:</#FFE4C7> in bloodmoon.yml)."
+  # <world>
+  bm-started: "<#A80000>Blood moon started in <#FFE4C7><world>"
+  # Another plugin cancelled it (BloodMoonStartEvent). <world>
+  bm-cancelled: "<#FFB366>Another plugin stopped the blood moon in <#FFE4C7><world></#FFE4C7> from starting."
+  # <count>
+  bm-stopped: "<#FFB366>Stopped <#FFE4C7><count></#FFE4C7> blood moon(s)."
+  bm-status-title: "Blood Moon"
+  # <state> <days>
+  bm-status-enabled: "<#A80000>  ▸ </#A80000><#FFB366>Enabled <state> <#5A0000>|</#5A0000> <#FFB366>Every <#FFE4C7><days></#FFE4C7> days"
+  # <world> <wave>
+  bm-status-active: "<#A80000>  ▸ </#A80000><#FFE4C7><world></#FFE4C7> <#5A0000>»</#5A0000> <gradient:#FF2A00:#A80000><bold>ACTIVE</bold></gradient> <#FFB366>(wave <#FFE4C7><wave></#FFE4C7>)"
+  # <world>
+  bm-status-tonight: "<#A80000>  ▸ </#A80000><#FFE4C7><world></#FFE4C7> <#5A0000>»</#5A0000> <#FF8C1A>tonight"
+  # <world> <days>
+  bm-status-later: "<#A80000>  ▸ </#A80000><#FFE4C7><world></#FFE4C7> <#5A0000>»</#5A0000> <#FFB366>in <#FFE4C7><days></#FFE4C7> day(s)"
+  bm-status-no-worlds: "<#A80000>  ▸ No eligible worlds (check worlds: in bloodmoon.yml)"
+  # <target> = a name or "N players", <count> = mobs
+  horde-done: "<#A80000>Horde unleashed</#A80000> <#FFB366>on <#FFE4C7><target></#FFE4C7> (<count> mobs)."
+
+# -----------------------------------------------------------------------------
+#  Scares
+# -----------------------------------------------------------------------------
+scares:
+  whisper:
+    # <msg> = one of the lines below, <player> = the scared player
+    format: "<gradient:#A80000:#5A0000><Herobrine></gradient> <#FFB366><italic><msg>"
+    lines:
+      - "I see you."
+      - "Behind you."
+      - "Why are you still here?"
+      - "You shouldn't have come down here."
+      - "Don't turn around."
+      - "..."
+  jumpscare:
+    title: "<gradient:#FF2A00:#5A0000><bold>☠</bold></gradient>"
+    subtitle: "<gradient:#FFB366:#A80000><italic>found you</italic></gradient>"
+  sky-drop:
+    title: "<gradient:#FF8C1A:#5A0000><bold>FALLING</bold></gradient>"
+    subtitle: "<gradient:#FFB366:#A80000><italic>he let go of you</italic></gradient>"
+  # FAKE_JOIN: a fake join message only the target sees. Looks exactly like vanilla by default.
+  fake-join:
+    name: "Herobrine"
+    # <name>
+    join: "<yellow><name> joined the game"
+    leave: "<yellow><name> left the game"
+    # <name> <line>   ("\<" shows a real "<" sign)
+    chat: "<white>\\<<name>> <line>"
+    # <player> = the scared player
+    lines:
+      - "hi <player>"
+      - "why are you alone"
+      - "i'm in your base"
+      - "don't log off"
+
+# -----------------------------------------------------------------------------
+#  Blood Moon (switch them on/off with "announce" in bloodmoon.yml)
+# -----------------------------------------------------------------------------
+bloodmoon:
+  warning: "<#FF8C1A>☾ <#FFB366>The sun sets... and the moon is turning <gradient:#FF2A00:#A80000><bold>red</bold></gradient><#FFB366>."
+  start-title: "<gradient:#5A0000:#FF2A00:#5A0000><bold>BLOOD MOON</bold></gradient>"
+  start-subtitle: "<gradient:#FFB366:#FF8C1A>the dead walk tonight</gradient>"
+  end: "<#FFB366>The blood moon fades. You survived... <gradient:#A80000:#5A0000><italic>for now.</italic></gradient>"
+  no-sleep: "<#FFB366>You can't sleep during a <gradient:#FF2A00:#A80000><bold>Blood Moon</bold></gradient><#FFB366>!"
+  # <wave> <kills>
+  bossbar: "<gradient:#FF2A00:#A80000><bold>Blood Moon</bold></gradient> <#5A0000>|</#5A0000> <#FFB366>Wave <#FFE4C7><bold><wave></bold></#FFE4C7> <#5A0000>|</#5A0000> <#FFB366>Kills <#FFE4C7><bold><kills>"
+  survived-title: "<gradient:#FFE4C7:#FF8C1A><bold>SURVIVED</bold></gradient>"
+  survived-subtitle: "<gradient:#A80000:#5A0000>the blood moon has set</gradient>"
+  horde-title: "<gradient:#FF2A00:#5A0000><bold>HORDE</bold></gradient>"
+  # <wave>
+  horde-subtitle: "<#FFB366>wave <#FFE4C7><bold><wave></bold></#FFE4C7> <#FFB366>is coming for you"
+  horde-captain: "<gradient:#FF8C1A:#A80000><bold>☠ Horde Captain ☠</bold></gradient>"
+  # <wave> <hordes> <size>
+  wave-announce: "<gradient:#FF8C1A:#A80000><bold>⚔ WAVE <wave></bold></gradient> <#5A0000>»</#5A0000> <#FFE4C7><hordes></#FFE4C7> <#FFB366>horde(s) of <#FFE4C7><size></#FFE4C7> <#FFB366>have risen!"
+  # <boss> <player>
+  boss-announce: "<#A80000><bold>☠</bold></#A80000> <gradient:#FF2A00:#FF8C1A><bold><boss></bold></gradient> <#FFB366>leads the horde hunting <#FFE4C7><player></#FFE4C7><#FFB366>!"
+
+# -----------------------------------------------------------------------------
+#  Death messages (one is picked at random). Turn them off with
+#  "death-messages: false" in bloodmoon.yml.
+#  Placeholders: <player> <mob> <killer> <weapon> <wave>
+#  (Mob names and weapon names are shown safely: a renamed sword can't inject formatting.)
+# -----------------------------------------------------------------------------
+death:
+  horde:
+    - "<#A80000>☠</#A80000> <#FFE4C7><player></#FFE4C7> <#FFB366>was torn apart by a <gradient:#FF2A00:#A80000><bold>horde</bold></gradient> <#FFB366>on wave <#FFE4C7><wave>"
+    - "<#A80000>☠</#A80000> <#FFE4C7><player></#FFE4C7> <#FFB366>was overrun. <gradient:#FF8C1A:#A80000><mob></gradient> <#FFB366>landed the final blow."
+    - "<#A80000>☠</#A80000> <gradient:#FF8C1A:#A80000>The horde</gradient> <#FFB366>dragged <#FFE4C7><player></#FFE4C7> <#FFB366>into the dark."
+  bloodmoon:
+    - "<#A80000>☾</#A80000> <#FFE4C7><player></#FFE4C7> <#FFB366>was claimed by the <gradient:#FF2A00:#5A0000><bold>Blood Moon</bold></gradient>"
+    - "<#A80000>☾</#A80000> <gradient:#FF8C1A:#A80000><mob></gradient> <#FFB366>fed <#FFE4C7><player></#FFE4C7> <#FFB366>to the red moon"
+  mob:
+    - "<#A80000>☠</#A80000> <#FFE4C7><player></#FFE4C7> <#FFB366>was slain by <gradient:#FF8C1A:#A80000><mob></gradient>"
+    - "<#A80000>☠</#A80000> <gradient:#FF8C1A:#A80000><mob></gradient> <#FFB366>made quick work of <#FFE4C7><player>"
+  player:
+    - "<#A80000>⚔</#A80000> <#FFE4C7><player></#FFE4C7> <#FFB366>was killed by <gradient:#FF8C1A:#A80000><killer></gradient> <#FFB366>using <#FFE4C7><weapon>"
+    - "<#A80000>⚔</#A80000> <gradient:#FF8C1A:#A80000><killer></gradient> <#FFB366>ended <#FFE4C7><player>"
+  # Shown as <weapon> when the killer had nothing in their hand
+  fists: "their fists"
+
+# -----------------------------------------------------------------------------
+#  Blood Moon menu (/coni bloodmoon)
+# -----------------------------------------------------------------------------
+menu:
+  title-main: "<#A80000><bold>Blood Moon Settings"
+  title-hordes: "<#A80000><bold>Horde Settings"
+  title-mobs: "<#A80000><bold>Blood Moon Mobs"
+
+  # Every setting button. <description> <value>
+  setting-name: "<#A80000><bold><name>"
+  setting-lore:
+    - "<#FFB366><description>"
+    - ""
+    - "<#FFB366>Current: <value>"
+  toggle-hint: "<#FFB366>Click to toggle"
+  # Added under settings that need a newer Minecraft version. <version>
+  needs-version: "<#FF4A3D>Needs Minecraft <version>+ (has no effect on this server)"
+
+  start-name: "<#7CFF6B><bold>Start Blood Moon Now"
+  start-lore:
+    - "<#FFB366>Starts in your current world."
+    - "<#FFB366>Skips to nightfall if it's daytime."
+  stop-name: "<#A80000><bold>Stop Blood Moon"
+  stop-lore:
+    - "<#FFB366>Ends every active blood moon."
+  horde-name: "<#A80000><bold>Summon Horde On Me"
+  horde-lore:
+    - "<#FFB366>Spawns a wave-1 sized horde"
+    - "<#FFB366>around you right now."
+    - "<#FFB366>Works even without a blood moon."
+  horde-page-name: "<#A80000><bold>Horde Settings"
+  horde-page-lore:
+    - "<#FFB366>Waves, growth, player scaling"
+    - "<#FFB366>and boss chance."
+  status-name: "<#FFB366><bold>Status"
+  mobs-name: "<#FF8C1A><bold>Special Mobs"
+  # <count>
+  mobs-lore:
+    - "<#FFB366>Choose which mobs can appear"
+    - "<#FFB366>during a blood moon."
+    - ""
+    - "<#FFB366>Enabled: <#FFE4C7><count>"
+  # Mob toggles on the Special Mobs page. <mob>
+  mob-on-name: "<#7CFF6B><mob>"
+  mob-off-name: "<#FFB366><mob>"
+  mob-on-lore:
+    - "<#7CFF6B>Enabled"
+    - ""
+    - "<#FFB366>Click to toggle"
+  mob-off-lore:
+    - "<#A80000>Disabled"
+    - ""
+    - "<#FFB366>Click to toggle"
+  mob-missing-lore:
+    - "<#FF4A3D>Doesn't exist on this server version"
+  # <count>
+  # OPTIONAL: rename or translate a setting button. Use the key from bloodmoon.yml, e.g.
+  # settings:
+  #   every-days:
+  #     name: "Cada X días"
+  #     description: "Días de Minecraft entre lunas de sangre"
+  summoned: "<#FFB366>Summoned a horde of <#FFE4C7><count></#FFE4C7> on yourself."
+  not-eligible: "<#A80000>Blood moons aren't enabled in this world."
