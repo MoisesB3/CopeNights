@@ -1,0 +1,20 @@
+name: CopeNights
+version: '${project.version}'
+main: us.copestudios.copenights.CopeNights
+api-version: '1.21'
+author: Z3R0 / Cope Studios
+description: Cope Nights - jump scares, Herobrine, Blood Moons and hordes.
+
+commands:
+  coni:
+    description: Cope Nights - scares and Blood Moon controls.
+    usage: /coni help
+    aliases: [cosc, copenights]
+
+permissions:
+  copenights.admin:
+    description: Use all /coni commands and the Blood Moon menu.
+    default: op
+  copenights.exempt:
+    description: Never targeted by random scares.
+    default: false

@@ -1,0 +1,174 @@
+# ============================================
+#  Cope Nights - bloodmoon.yml
+#  Most of this is editable in-game: /coni bloodmoon
+#  (Saving from the menu rewrites this file, so comments may disappear.)
+# ============================================
+
+enabled: true
+# A blood moon happens on every Nth Minecraft day (day 7, 14, 21... with 7)
+every-days: 7
+
+# Worlds that get blood moons. Empty list = every overworld-type world.
+worlds: []
+
+# --- Mobs ---
+# 2.0 = every natural hostile spawn brings one extra mob. 2.5 = 50% chance of a second extra.
+spawn-multiplier: 2.0
+health-multiplier: 1.5
+damage-multiplier: 1.5
+speed-multiplier: 1.15
+# Chance a blood moon mob is a giant, and how big giants get
+giant-chance: 0.10
+giant-scale: 1.8
+# Chance a natural spawn is swapped for one of the special-mobs below
+special-chance: 0.20
+# Safety cap: max blood moon mobs alive per world
+max-mobs: 400
+special-mobs:
+  - WITHER_SKELETON
+  - VINDICATOR
+  - PILLAGER
+  - WITCH
+  - BLAZE
+  - PHANTOM
+  - CAVE_SPIDER
+  - HUSK
+  - STRAY
+  - BOGGED
+
+# --- Hordes ---
+# Waves of hordes hit random survival players all night. Wave 1 comes soon after
+# moonrise, then one wave every horde-interval-seconds. Each wave sends 1 horde per
+# horde-players-per-horde players online (each on a different player), and hordes
+# grow by horde-growth mobs every wave until horde-max-size.
+# Summon one by hand anytime: /coni bm horde <player> [size]
+hordes: true
+horde-first-delay-seconds: 30
+horde-interval-seconds: 90
+horde-size: 4
+horde-growth: 2
+horde-max-size: 30
+horde-players-per-horde: 2
+horde-max-per-wave: 5
+horde-radius: 16
+# A glowing, oversized zombie with double health leads each horde
+horde-captain: true
+# Mobs hordes are built from (special-chance can still swap in special-mobs)
+horde-mobs:
+  - ZOMBIE
+  - HUSK
+  - SKELETON
+  - SPIDER
+  - CREEPER
+  - ZOMBIE_VILLAGER
+  - DROWNED
+
+# --- Horde bosses (Cope Bosses) ---
+# Chance each horde also brings a boss
+horde-boss-chance: 0.30
+horde-bosses:
+  - frost-colossus
+  - hunter
+  - inferno-brute
+  - shadow-assassin
+  - skeleton-king
+  - storm-caller
+  - wizard
+# Placeholders: %boss% %player% %world% %x% %y% %z%
+horde-boss-command: "cb spawn %boss%"
+# player  = run as the horde's target, so the boss spawns where they stand
+#           (they get the permissions below for that one command only)
+# console = run from console (use %x% %y% %z% if your command takes coordinates)
+horde-boss-run-as: player
+horde-boss-permissions:
+  - copebosses.admin
+  - copebosses.spawn
+
+# --- Rewards ---
+drop-multiplier: 1.5
+xp-multiplier: 2.0
+survivor-rewards: true
+# Run from console for every player in the world who didn't die during the blood moon
+reward-commands:
+  - "give %player% minecraft:golden_apple 1"
+
+# --- Atmosphere ---
+block-sleep: true
+red-sky: true
+boss-bar: true
+thunder: true
+despawn-at-end: true
+# --- Blood moon scares ---
+# Runs all night on survival players, even when /coni toggle is OFF.
+scares: true
+scare-interval-seconds: 40
+# Chance each player gets scared every roll
+scare-chance: 0.30
+# Scare everyone gets when the blood moon rises (NONE to disable)
+moonrise-scare: LIGHTS_OUT
+# A horde's target gets one of these as a warning, then the horde hits 4s later. [] = no warning
+horde-warning-scares:
+  - KNOCK
+  - SURROUNDED
+  - WHISPER
+  - FOOTSTEPS
+# Which scares the blood moon picks (higher = more often, 0 = never)
+scare-weights:
+  HEROBRINE: 12
+  STALKER: 8
+  TURN_AROUND: 8
+  JUMPSCARE: 6
+  SKY_DROP: 6
+  BURIED: 8
+  LIGHTS_OUT: 6
+  FAKE_TNT: 8
+  BLACKOUT: 8
+  PHANTOM_HIT: 10
+  SURROUNDED: 6
+  FOOTSTEPS: 6
+  KNOCK: 6
+  WHISPER: 6
+  FAKE_JOIN: 4
+  SOUNDS: 4
+  CREEPER: 6
+  LIGHTNING: 4
+# Extra multiplier for the normal /coni auto scares during a blood moon (needs /coni toggle on)
+scare-boost: 2.5
+announce: true
+# Coni death messages for horde / blood moon mob / mob / player kills
+death-messages: true
+
+# Colors:
+#   &#RRGGBB                                  single RGB color
+#   <gradient:#A80000:#FF8C1A>text</gradient> smooth gradient (2+ colors, & formats like &l work inside)
+#   Palette: blood #5A0000 | dark red #A80000 | orange #FF8C1A | ember #FFB366 | cream #FFE4C7
+messages:
+  warning: "&#FF8C1A☾ &#FFB366The sun sets... and the moon is turning <gradient:#FF2A00:#A80000>&lred</gradient>&#FFB366."
+  start-title: "<gradient:#5A0000:#FF2A00:#5A0000>&lBLOOD MOON</gradient>"
+  start-subtitle: "<gradient:#FFB366:#FF8C1A>the dead walk tonight</gradient>"
+  end: "&#FFB366The blood moon fades. You survived... <gradient:#A80000:#5A0000>&ofor now.</gradient>"
+  no-sleep: "&#FFB366You can't sleep during a <gradient:#FF2A00:#A80000>&lBlood Moon</gradient>&#FFB366!"
+  bossbar: "<gradient:#FF2A00:#A80000>&lBlood Moon</gradient> &#5A0000| &#FFB366Wave &#FFE4C7&l%wave% &#5A0000| &#FFB366Kills &#FFE4C7&l%kills%"
+  survived-title: "<gradient:#FFE4C7:#FF8C1A>&lSURVIVED</gradient>"
+  survived-subtitle: "<gradient:#A80000:#5A0000>the blood moon has set</gradient>"
+  horde-title: "<gradient:#FF2A00:#5A0000>&lHORDE</gradient>"
+  horde-subtitle: "&#FFB366wave &#FFE4C7&l%wave% &#FFB366is coming for you"
+  horde-captain: "<gradient:#FF8C1A:#A80000>&l☠ Horde Captain ☠</gradient>"
+  wave-announce: "<gradient:#FF8C1A:#A80000>&l⚔ WAVE %wave%</gradient> &#5A0000» &#FFE4C7%hordes% &#FFB366horde(s) of &#FFE4C7%size% &#FFB366have risen!"
+  boss-announce: "&#A80000&l☠ <gradient:#FF2A00:#FF8C1A>&l%boss%</gradient> &#FFB366leads the horde hunting &#FFE4C7%player%&#FFB366!"
+
+# Death messages (one is picked at random). Placeholders: %player% %mob% %killer% %weapon% %wave%
+death-messages-text:
+  horde:
+    - "&#A80000☠ &#FFE4C7%player% &#FFB366was torn apart by a <gradient:#FF2A00:#A80000>&lhorde</gradient> &#FFB366on wave &#FFE4C7%wave%"
+    - "&#A80000☠ &#FFE4C7%player% &#FFB366was overrun. <gradient:#FF8C1A:#A80000>%mob%</gradient> &#FFB366landed the final blow."
+    - "&#A80000☠ <gradient:#FF8C1A:#A80000>The horde</gradient> &#FFB366dragged &#FFE4C7%player% &#FFB366into the dark."
+  bloodmoon:
+    - "&#A80000☾ &#FFE4C7%player% &#FFB366was claimed by the <gradient:#FF2A00:#5A0000>&lBlood Moon</gradient>"
+    - "&#A80000☾ <gradient:#FF8C1A:#A80000>%mob%</gradient> &#FFB366fed &#FFE4C7%player% &#FFB366to the red moon"
+  mob:
+    - "&#A80000☠ &#FFE4C7%player% &#FFB366was slain by <gradient:#FF8C1A:#A80000>%mob%</gradient>"
+    - "&#A80000☠ <gradient:#FF8C1A:#A80000>%mob%</gradient> &#FFB366made quick work of &#FFE4C7%player%"
+  player:
+    - "&#A80000⚔ &#FFE4C7%player% &#FFB366was killed by <gradient:#FF8C1A:#A80000>%killer%</gradient> &#FFB366using &#FFE4C7%weapon%"
+    - "&#A80000⚔ <gradient:#FF8C1A:#A80000>%killer%</gradient> &#FFB366ended &#FFE4C7%player%"
